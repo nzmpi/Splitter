@@ -2,8 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract Splitter {
+contract Splitter is ReentrancyGuard {
   address public owner;
   // 100% == 1000
   uint16 public tax;
@@ -20,7 +21,7 @@ contract Splitter {
   function splitEth(
     address[] calldata _receivers,
     uint256[] calldata _amounts
-  ) external payable {
+  ) external payable nonReentrant {
     if (_receivers.length != _amounts.length) revert InvalidInput();
     uint256 tax_ = tax;
     uint256 totalAmount;
@@ -46,7 +47,7 @@ contract Splitter {
     address _token,
     address[] calldata _receivers,
     uint256[] calldata _amounts
-  ) external {
+  ) external nonReentrant {
     if (_receivers.length != _amounts.length) revert InvalidInput();
     uint256 tax_ = tax;
     uint256 totalAmount;
@@ -70,13 +71,13 @@ contract Splitter {
     return _in.balance;
   }
 
-  function setTax(uint16 _newTax) external onlyOwner() {
+  function setTax(uint16 _newTax) external onlyOwner {
     if (_newTax > 1000) revert TaxTooHigh();
     emit TaxChanged(tax, _newTax); 
     tax = _newTax;
   }
 
-  function transferOwnership(address _newOwner) external onlyOwner() {  
+  function transferOwnership(address _newOwner) external onlyOwner {  
     owner = _newOwner;
     emit OwnershipTransferred(msg.sender, _newOwner);
   }

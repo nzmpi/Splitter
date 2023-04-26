@@ -5,7 +5,7 @@ const contracts = {
       chainId: "31337",
       contracts: {
         Splitter: {
-          address: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
+          address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
           abi: [
             {
               inputs: [],
@@ -130,6 +130,19 @@ const contracts = {
                 },
               ],
               name: "getBal",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "getHash",
               outputs: [
                 {
                   internalType: "uint256",
