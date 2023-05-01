@@ -5,7 +5,7 @@ const contracts = {
       chainId: "31337",
       contracts: {
         Splitter: {
-          address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+          address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
           abi: [
             {
               inputs: [],
@@ -122,6 +122,13 @@ const contracts = {
               type: "event",
             },
             {
+              inputs: [],
+              name: "createToken",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
               inputs: [
                 {
                   internalType: "address",
@@ -141,8 +148,27 @@ const contracts = {
               type: "function",
             },
             {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "_in",
+                  type: "address",
+                },
+              ],
+              name: "getBalance",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
               inputs: [],
-              name: "getHash",
+              name: "getSupply",
               outputs: [
                 {
                   internalType: "uint256",
@@ -234,6 +260,19 @@ const contracts = {
               type: "function",
             },
             {
+              inputs: [],
+              name: "token",
+              outputs: [
+                {
+                  internalType: "contract TestToken",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
               inputs: [
                 {
                   internalType: "address",
@@ -242,6 +281,13 @@ const contracts = {
                 },
               ],
               name: "transferOwnership",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "withdrawEth",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",
