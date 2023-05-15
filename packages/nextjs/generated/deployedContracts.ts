@@ -5,12 +5,17 @@ const contracts = {
       chainId: "31337",
       contracts: {
         Splitter: {
-          address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+          address: "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
           abi: [
             {
               inputs: [],
               stateMutability: "nonpayable",
               type: "constructor",
+            },
+            {
+              inputs: [],
+              name: "FeeTooHigh",
+              type: "error",
             },
             {
               inputs: [],
@@ -23,8 +28,14 @@ const contracts = {
               type: "error",
             },
             {
-              inputs: [],
-              name: "TaxTooHigh",
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "receiver",
+                  type: "address",
+                },
+              ],
+              name: "NotSent",
               type: "error",
             },
             {
@@ -32,31 +43,50 @@ const contracts = {
               inputs: [
                 {
                   indexed: false,
-                  internalType: "address",
-                  name: "oldOwner",
-                  type: "address",
+                  internalType: "uint16",
+                  name: "oldFee",
+                  type: "uint16",
                 },
                 {
                   indexed: false,
-                  internalType: "address",
-                  name: "newOwner",
-                  type: "address",
+                  internalType: "uint16",
+                  name: "newFee",
+                  type: "uint16",
                 },
               ],
-              name: "OwnershipTransferred",
+              name: "FeeChangedEvent",
               type: "event",
             },
             {
               anonymous: false,
               inputs: [
                 {
-                  indexed: false,
+                  indexed: true,
+                  internalType: "address",
+                  name: "oldOwner",
+                  type: "address",
+                },
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "newOwner",
+                  type: "address",
+                },
+              ],
+              name: "OwnershipTransferredEvent",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
                   internalType: "address",
                   name: "from",
                   type: "address",
                 },
                 {
-                  indexed: false,
+                  indexed: true,
                   internalType: "address[]",
                   name: "to",
                   type: "address[]",
@@ -75,13 +105,13 @@ const contracts = {
               anonymous: false,
               inputs: [
                 {
-                  indexed: false,
+                  indexed: true,
                   internalType: "address",
                   name: "from",
                   type: "address",
                 },
                 {
-                  indexed: false,
+                  indexed: true,
                   internalType: "address[]",
                   name: "to",
                   type: "address[]",
@@ -103,45 +133,26 @@ const contracts = {
               type: "event",
             },
             {
-              anonymous: false,
               inputs: [
                 {
-                  indexed: false,
-                  internalType: "uint16",
-                  name: "oldTax",
-                  type: "uint16",
-                },
-                {
-                  indexed: false,
-                  internalType: "uint16",
-                  name: "newTax",
-                  type: "uint16",
+                  internalType: "address",
+                  name: "_minter",
+                  type: "address",
                 },
               ],
-              name: "TaxChanged",
-              type: "event",
-            },
-            {
-              inputs: [],
               name: "createToken",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",
             },
             {
-              inputs: [
-                {
-                  internalType: "address",
-                  name: "_in",
-                  type: "address",
-                },
-              ],
-              name: "getBal",
+              inputs: [],
+              name: "fee",
               outputs: [
                 {
-                  internalType: "uint256",
+                  internalType: "uint16",
                   name: "",
-                  type: "uint256",
+                  type: "uint16",
                 },
               ],
               stateMutability: "view",
@@ -155,7 +166,7 @@ const contracts = {
                   type: "address",
                 },
               ],
-              name: "getBalance",
+              name: "getEthBalance",
               outputs: [
                 {
                   internalType: "uint256",
@@ -169,6 +180,25 @@ const contracts = {
             {
               inputs: [],
               name: "getSupply",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "_in",
+                  type: "address",
+                },
+              ],
+              name: "getTokenBalance",
               outputs: [
                 {
                   internalType: "uint256",
@@ -196,11 +226,11 @@ const contracts = {
               inputs: [
                 {
                   internalType: "uint16",
-                  name: "_newTax",
+                  name: "_newFee",
                   type: "uint16",
                 },
               ],
-              name: "setTax",
+              name: "setFee",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",
@@ -248,19 +278,6 @@ const contracts = {
             },
             {
               inputs: [],
-              name: "tax",
-              outputs: [
-                {
-                  internalType: "uint16",
-                  name: "",
-                  type: "uint16",
-                },
-              ],
-              stateMutability: "view",
-              type: "function",
-            },
-            {
-              inputs: [],
               name: "token",
               outputs: [
                 {
@@ -289,8 +306,25 @@ const contracts = {
               inputs: [],
               name: "withdrawEth",
               outputs: [],
-              stateMutability: "nonpayable",
+              stateMutability: "payable",
               type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "_token",
+                  type: "address",
+                },
+              ],
+              name: "withdrawTokens",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              stateMutability: "payable",
+              type: "receive",
             },
           ],
         },

@@ -1,57 +1,73 @@
 import Head from "next/head";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 import type { NextPage } from "next";
-import { BugAntIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import SplitterUI from "~~/components/assets/SplitterUI";
+import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
+  const [activeItem, setActiveItem] = useState("split-eth");
+  const [totalAmount, setTotalAmount] = useState("0");
+  const account = useAccount();
+
+  function handleItemClick(itemId: string) {
+    setActiveItem(itemId);
+  }
+
+  let splitterContract;
+  const { data: deployedContractData } = useDeployedContractInfo("Splitter");
+  if (deployedContractData) {
+    ({ address: splitterContract } = deployedContractData);
+  }
+
+  const { data: fee} = useScaffoldContractRead({
+    contractName: "Splitter",
+    functionName: "fee",
+  });
+
+  useEffect(() => {    
+  }, [fee]);
+
   return (
     <>
       <Head>
-        <title>Scaffold-ETH 2 App</title>
+        <title>Home</title>
         <meta name="description" content="Created with 🏗 scaffold-eth-2" />
       </Head>
 
       <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center mb-8">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-          </h1>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold">packages/nextjs/pages/index.tsx</code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract <code className="italic bg-base-300 text-base font-bold">YourContract.sol</code> in{" "}
-            <code className="italic bg-base-300 text-base font-bold">packages/hardhat/contracts</code>
-          </p>
-        </div>
 
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contract
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <SparklesIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Experiment with{" "}
-                <Link href="/example-ui" passHref className="link">
-                  Example UI
-                </Link>{" "}
-                to build your own UI.
-              </p>
-            </div>
-          </div>
+        <ul className="menu menu-horizontal bg-base-100 rounded-box activemenu border">
+          <li onClick={() => handleItemClick("split-eth")}>
+            <a className={activeItem === "split-eth" ? "active" : ""}>Split ETH</a>
+          </li>          
+          <li onClick={() => handleItemClick("split-tokens")}>
+            <a className={activeItem === "split-tokens" ? "active" : ""}>Split Tokens</a>
+          </li>
+        </ul>
+        <SplitterUI 
+          splitItem={activeItem} 
+          account={account} 
+          splitterContract={splitterContract} 
+          fee={fee} 
+          totalAmount={totalAmount}
+          setTotalAmount={setTotalAmount}
+          />
+        
+        <div className="flex mx-auto mt-14 border-primary border-2 rounded-3xl shadow-lg px-7 py-5 ">
+        <div className="flex-column">
+          <span className="p-2 text-lg font-bold"> Fee: </span>
+          <span className="p-1 text-lg text-right min-w-[2rem]"> 
+            {fee ? fee/10 : "0"} %
+          </span>
+          
+          <div className="p-2 py-1"> </div>
+          <span className="p-2 text-lg font-bold"> Sum + Fee: </span>
+          <span className="p-2 text-lg text-right min-w-[2rem]"> {totalAmount.toLocaleString() || "0"} </span>
+
         </div>
-      </div>
+        </div>
+        </div>
     </>
   );
 };
