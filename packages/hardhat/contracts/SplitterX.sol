@@ -3,26 +3,29 @@ pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-contract Splitter is ReentrancyGuard {
+/**
+ * @title SplitterX is a contract that helps to split eth or ERC20 tokens
+ * @author devorsmth.eth
+ */
+contract SplitterX is ReentrancyGuard {
   using SafeERC20 for IERC20;
   address public owner;
   // 100% == 1000
   uint16 public fee;
-  TestToken public token;
 
   constructor () {
-    owner = 0xc8ED1BFD9c71dC422BEA203BD8d869b55Bf252dd;
-    createToken(owner);
+    owner = msg.sender;
   }
 
   modifier onlyOwner() {
     if (msg.sender != owner) revert NotOwner();
     _;
   }
-
+  /**
+   * @notice If fee != zero msg.value must include fee
+   */
   function splitEth(
     address[] calldata _receivers,
     uint256[] calldata _amounts
@@ -39,10 +42,16 @@ contract Splitter is ReentrancyGuard {
       unchecked {++i;}
     }
 
-    if (msg.value < totalAmount*(1000+fee)/1000) revert InvalidInput();
+    uint256 fee_ = fee;
+    if (0 != fee_) {
+      if (msg.value < totalAmount*(1000+fee_)/1000) revert InvalidInput();
+    }
     emit SplitEthEvent(msg.sender, _receivers, _amounts);
   }
 
+  /**
+   * @notice If fee != zero fee amount of tokens should be also approved
+   */
   function splitToken(
     address _token,
     address[] calldata _receivers,
@@ -66,31 +75,13 @@ contract Splitter is ReentrancyGuard {
     emit SplitTokenEvent(msg.sender, _receivers, _amounts, _token);
   }
 
-  function createToken(address _minter) public {
-    token = new TestToken();
-    token.mint(_minter, 10000 ether);
-    token.approveAll(_minter, address(this));
-  }
-
-  function getTokenBalance(address _in) external view returns (uint256) {
-    return token.balanceOf(_in);
-  }
-
-  function getSupply() external view returns (uint256) {
-    return token.totalSupply();
-  }
-
-  function getEthBalance(address _in) external view returns (uint256) {
-    return _in.balance;
-  }
-
-  function setFee(uint16 _newFee) external onlyOwner {
+  function setFee(uint16 _newFee) external payable onlyOwner {
     if (1000 < _newFee) revert FeeTooHigh();
     emit FeeChangedEvent(fee, _newFee); 
     fee = _newFee;
   }
 
-  function transferOwnership(address _newOwner) external onlyOwner {  
+  function transferOwnership(address _newOwner) external payable onlyOwner {  
     owner = _newOwner;
     emit OwnershipTransferredEvent(msg.sender, _newOwner);
   }
@@ -120,18 +111,4 @@ contract Splitter is ReentrancyGuard {
   event FeeChangedEvent(uint16 oldFee, uint16 newFee);
   event SplitEthEvent(address indexed from, address[] indexed to, uint256[] amounts);
   event SplitTokenEvent(address indexed from, address[] indexed to, uint256[] amounts, address token);
-}
-
-contract TestToken is ERC20 {
-  constructor() ERC20("FaceTKN","|-0.0-|") {}
-
-  function mint( address _minter, uint256 _amount) external {
-    _mint(_minter, _amount);
-  }
-
-  function approveAll(address _owner, address _spender) external returns(address,address) {
-    _approve(_owner, _spender, type(uint256).max);
-    return (_owner, _spender);
-  }
-
 }

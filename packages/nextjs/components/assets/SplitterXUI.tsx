@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { AddressInput } from "../scaffold-eth";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { ethers } from "ethers";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { EthInput } from "./Inputs";
+import { Input } from "./Inputs";
 import { GetToken } from "./GetToken";
+import { ethers } from "ethers";
 
-const SplitterUI = ({ 
+const SplitterXUI = ({ 
   splitItem, 
   account, 
-  splitterContract, 
+  splitterXContract, 
   fee,
   totalAmount,
   setTotalAmount 
 }: { 
   splitItem: string, 
   account: any, 
-  splitterContract: any, 
+  splitterXContract: any, 
   fee: any, 
   totalAmount: any,
   setTotalAmount: any 
 }) => {
   const [wallets, setWallets] = useState<string[]>([""]);
-  const [amounts, setAmounts] = useState<string[]>([""]);
-  const [amountsInWei, setAmountsInWei] = useState<any[]>([]);
+  const [amounts, setAmounts] = useState<any[]>([]);
+  const [amountsString, setAmountsString] = useState<string[]>([""]);
   const [tokenContract, setTokenContract] = useState("");
   const [tokenName, setTokenName] = useState("tokens");
   const [tokenSymbol, setTokenSymbol] = useState("");
@@ -35,64 +35,64 @@ const SplitterUI = ({
   };
 
   const updateAmounts = async (value: string, index: number) => {
-    const newAmounts = [...amounts];
+    const newAmounts = [...amountsString];
     newAmounts[index] = value;
-    setAmounts(newAmounts);
+    setAmountsString(newAmounts);
   };
 
-  const addWalletField = () => {
+  const addField = () => {
     const newWallets = [...wallets, ""];
     setWallets(newWallets);
-    const newAmounts = [...amounts, ""];
-    setAmounts(newAmounts);
+    const newAmounts = [...amountsString, ""];
+    setAmountsString(newAmounts);
   };
 
-  const removeWalletField = (index: number) => {
+  const removeField = (index: number) => {
     const newWallets = [...wallets];
     newWallets.splice(index, 1);
     setWallets(newWallets);
 
-    const newAmounts = [...amounts];
+    const newAmounts = [...amountsString];
     newAmounts.splice(index, 1);
-    setAmounts(newAmounts);
+    setAmountsString(newAmounts);
   };
 
   useEffect(() => {
     let totalETH = 0;
-    const newAmountsInWei = [];
-    for (let index = 0; index < amounts.length; index++) {
-      if (amounts[index] === "") {
+    const newAmounts = [];
+    for (let index = 0; index < amountsString.length; index++) {
+      if (amountsString[index] === "") {
         return;
       }
-      totalETH += parseFloat(amounts[index]);
-      newAmountsInWei.push(ethers.utils.parseUnits(amounts[index].toString(), "ether"));
+      totalETH += parseFloat(amountsString[index]);
+      newAmounts.push(ethers.utils.parseUnits(amountsString[index].toString(), "ether"));
     }
-    setAmountsInWei(newAmountsInWei);
+    setAmounts(newAmounts);
     if (fee > 0) {
       totalETH *= (1000+fee)/1000;
     }
     setTotalAmount(totalETH.toString());
-  }, [amounts]);
+  }, [amountsString]);
 
   useEffect(() => {
-    for (let index = 0; index < amounts.length; index++) {
-      if (wallets[index] === "" || amounts[index] === "") {
+    for (let index = 0; index < amountsString.length; index++) {
+      if (wallets[index] === "" || amountsString[index] === "") {
         return;
       }
     }
-  }, [amounts, wallets]);
+  }, [amountsString, wallets]);
 
   const { writeAsync: splitEth } = useScaffoldContractWrite({
-    contractName: "Splitter",
+    contractName: "SplitterX",
     functionName: "splitEth",
-    args: [wallets, amountsInWei],
+    args: [wallets, amounts],
     value: totalAmount,
   });
 
   const { writeAsync: splitToken } = useScaffoldContractWrite({
-    contractName: "Splitter",
+    contractName: "SplitterX",
     functionName: "splitToken",
-    args: [tokenContract, wallets, amountsInWei],
+    args: [tokenContract, wallets, amounts],
   });
 
   return (
@@ -100,7 +100,7 @@ const SplitterUI = ({
       {splitItem === "split-tokens" && (
         <GetToken
           account={account}
-          splitterContract={splitterContract}
+          splitterXContract={splitterXContract}
           tokenContract={tokenContract}
           setTokenContract={setTokenContract}
           tokenName={tokenName}
@@ -125,16 +125,16 @@ const SplitterUI = ({
                     <span className="w-11/12">
                       <AddressInput
                         name={""}
-                        placeholder={"Receivers' address"}
+                        placeholder={"Receiver's address"}
                         value={wallet}
                         onChange={value => updateWallet(value, index)}
                       />
                     </span>
                     <span className="w-4/12">
-                      <EthInput
+                      <Input
                         name = {splitItem === "split-eth" ? "Ξ" : tokenSymbol}
                         placeholder="Amount"
-                        value={amounts[index]}
+                        value={amountsString[index]}
                         onChange={value => updateAmounts(value, index)}                        
                       />
                     </span>
@@ -144,7 +144,7 @@ const SplitterUI = ({
                     <button
                       type="button"
                       onClick={() => {
-                        removeWalletField(index);
+                        removeField(index);
                       }}
                     >
                       <TrashIcon className="h-1/2" />
@@ -159,7 +159,7 @@ const SplitterUI = ({
           </div>
 
           <div className="my-[15px] w-full space-y-4">
-          <button type="button" onClick={addWalletField} 
+          <button type="button" onClick={addField} 
           className="btn btn-primary w-full font-black">
               <PlusIcon className="h-1/2" />
           </button>
@@ -167,7 +167,12 @@ const SplitterUI = ({
 
           <div className="my-[15px] w-full space-y-4">
           <button
-              type="button"              
+              type="button"
+              disabled={
+                amountsString.includes("") ||
+                wallets.includes("") ||
+                wallets.some(wallet => !ethers.utils.isAddress(wallet))
+              }              
               onClick={async () => {
                 splitItem === "split-eth" ? await splitEth() : await splitToken();
               }}
@@ -184,4 +189,4 @@ const SplitterUI = ({
   );
 };
 
-export default SplitterUI;
+export default SplitterXUI;

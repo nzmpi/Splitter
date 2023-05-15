@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import type { NextPage } from "next";
-import SplitterUI from "~~/components/assets/SplitterUI";
+import SplitterXUI from "~~/components/assets/SplitterXUI";
 import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
@@ -14,14 +14,14 @@ const Home: NextPage = () => {
     setActiveItem(itemId);
   }
 
-  let splitterContract;
-  const { data: deployedContractData } = useDeployedContractInfo("Splitter");
+  let splitterXContract;
+  const { data: deployedContractData } = useDeployedContractInfo("SplitterX");
   if (deployedContractData) {
-    ({ address: splitterContract } = deployedContractData);
+    ({ address: splitterXContract } = deployedContractData);
   }
 
   const { data: fee} = useScaffoldContractRead({
-    contractName: "Splitter",
+    contractName: "SplitterX",
     functionName: "fee",
   });
 
@@ -45,10 +45,10 @@ const Home: NextPage = () => {
             <a className={activeItem === "split-tokens" ? "active" : ""}>Split Tokens</a>
           </li>
         </ul>
-        <SplitterUI 
+        <SplitterXUI 
           splitItem={activeItem} 
           account={account} 
-          splitterContract={splitterContract} 
+          splitterXContract={splitterXContract} 
           fee={fee} 
           totalAmount={totalAmount}
           setTotalAmount={setTotalAmount}
@@ -56,14 +56,18 @@ const Home: NextPage = () => {
         
         <div className="flex mx-auto mt-14 border-primary border-2 rounded-3xl shadow-lg px-7 py-5 ">
         <div className="flex-column">
-          <span className="p-2 text-lg font-bold"> Fee: </span>
-          <span className="p-1 text-lg text-right min-w-[2rem]"> 
-            {fee ? fee/10 : "0"} %
-          </span>
+          <span className="p-2 text-lg font-bold"> Sum + Fee: </span>
+          <span className="text-lg text-right min-w-[2rem]"> {totalAmount.toLocaleString() || "0"} </span>
           
           <div className="p-2 py-1"> </div>
-          <span className="p-2 text-lg font-bold"> Sum + Fee: </span>
-          <span className="p-2 text-lg text-right min-w-[2rem]"> {totalAmount.toLocaleString() || "0"} </span>
+          <span className="p-2 text-lg font-bold"> Fee: </span>
+          <span className="text-lg text-right min-w-[2rem]"> 
+            {fee ? fee/10 : "0"} %
+          </span>
+
+          <div className="p-2 py-1"> </div>
+          <span className="p-2 text-lg font-bold"> Contract Address:</span>
+          <span className="text-lg text-right min-w-[2rem]"> {splitterXContract || "Not Deployed"} </span>
 
         </div>
         </div>

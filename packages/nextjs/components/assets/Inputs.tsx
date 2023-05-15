@@ -7,7 +7,7 @@ import { useAppStore } from "~~/services/store/store";
  *
  * onChange will always be called with the value in ETH
  */
-export const EthInput = ({ value, name, placeholder, onChange }: CommonInputProps) => {
+export const Input = ({ value, name, placeholder, onChange }: CommonInputProps) => {
   const [transitoryDisplayValue, setTransitoryDisplayValue] = useState<string>();
   const ethPrice = useAppStore(state => state.ethPrice);
 

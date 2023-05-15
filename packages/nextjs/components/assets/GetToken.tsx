@@ -4,11 +4,11 @@ import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { ethers, BigNumber } from "ethers";
 import { erc20ABI } from "wagmi";
 import { AddressInput } from "../scaffold-eth";
-import { EthInput } from "./Inputs";
+import { Input } from "./Inputs";
 
 export const GetToken = ({ 
   account, 
-  splitterContract,
+  splitterXContract,
   tokenContract,
   setTokenContract,
   tokenName, 
@@ -17,7 +17,7 @@ export const GetToken = ({
   setTokenSymbol 
 }: { 
   account: any, 
-  splitterContract: any, 
+  splitterXContract: any, 
   tokenContract: any,
   setTokenContract: any,
   tokenName: any,
@@ -36,7 +36,7 @@ export const GetToken = ({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "approve",
-        args: [splitterContract, approveAmount],
+        args: [splitterXContract, approveAmount],
       });
       await writeContract(config);
     } catch (error) {
@@ -64,7 +64,7 @@ export const GetToken = ({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "allowance",
-        args: [account.address, splitterContract],
+        args: [account.address, splitterXContract],
       });
       allowance = ethers.utils.formatEther(allowance);
       setTokenAllowance(allowance.toLocaleString());
@@ -90,7 +90,7 @@ export const GetToken = ({
     <div className="mx-auto my-14 -mb-2">
       <div className="md:w-[500px] w-[300px] lg:w-[800px] bg-base-100 rounded-3xl shadow-xl border-primary border-2 p-2">
         <div className="flex flex-col space-y-1 w-full my-1">
-          <p className="font-semibold  ml-1 my-0 break-words">Enter Token Contract</p>          
+          <p className="font-semibold mx-[15px] my-0 break-words">Enter Token Contract</p>          
           <span className="w-3/5">
             <AddressInput
               placeholder={"Token's address"}
@@ -100,14 +100,14 @@ export const GetToken = ({
           </span>
         </div>
         <div className="flex flex-col space-y-1 w-full my-1">
-          <p className="font-semibold  ml-1 my-0 break-words">Token Name: {tokenName} </p>
-          <p className="font-semibold  ml-1 my-0 break-words ">Your Balance: {tokenBalance} </p>
-          <p className="font-semibold  ml-1 my-0 break-words ">Splitter's Allowance: {tokenAllowance} </p>
+          <p className="font-semibold mx-[15px] my-0 break-words">Token Name: {tokenName !== "tokens" ? tokenName : ""} </p>
+          <p className="font-semibold mx-[15px] my-0 break-words ">Your Balance: {tokenBalance} </p>
+          <p className="font-semibold mx-[15px] my-0 break-words ">Splitter's Allowance: {tokenAllowance} </p>
           <div
             className={`flex items-center justify-between border-base-300  rounded-full text-accent w-full`}
           >
           <span className="w-3/5">
-            <EthInput
+            <Input
               name = {tokenSymbol}
               placeholder="Amount"
               value={approveAmountString}

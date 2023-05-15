@@ -1,6 +1,5 @@
 import { hardhat } from "wagmi/chains";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
-import { HeartIcon } from "@heroicons/react/24/outline";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { Faucet } from "~~/components/scaffold-eth";
 import { useAppStore } from "~~/services/store/store";
@@ -32,37 +31,25 @@ export const Footer = () => {
         <ul className="menu menu-horizontal w-full">
           <div className="flex justify-center items-center gap-2 text-sm w-full">
             <div>
+              Built by {" "}
+              <a
+                href="https://etherscan.io/address/0x02d09E69e528d7DA14F32Cd21b55aFFa1FF7F873"
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2"
+              >
+                devorsmth.eth 
+              </a> 
+              {" "} using {" "}
               <a
                 href="https://github.com/scaffold-eth/se-2"
                 target="_blank"
                 rel="noreferrer"
                 className="underline underline-offset-2"
               >
-                Fork me
+                Scaffold-Eth 2
               </a>
-            </div>
-            <span>·</span>
-            <div>
-              Built with <HeartIcon className="inline-block h-4 w-4" /> at 🏰{" "}
-              <a
-                href="https://buidlguidl.com/"
-                target="_blank"
-                rel="noreferrer"
-                className="underline underline-offset-2"
-              >
-                BuidlGuidl
-              </a>
-            </div>
-            <span>·</span>
-            <div>
-              <a
-                href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA"
-                target="_blank"
-                rel="noreferrer"
-                className="underline underline-offset-2"
-              >
-                Support
-              </a>
+              🏗
             </div>
           </div>
         </ul>
