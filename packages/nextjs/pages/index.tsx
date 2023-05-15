@@ -31,7 +31,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Home</title>
+        <title>SplitterX</title>
         <meta name="description" content="Created with 🏗 scaffold-eth-2" />
       </Head>
 
