@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import type { NextPage } from "next";
 import SplitterXUI from "~~/components/assets/SplitterXUI";
 import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import { Address } from "~~/components/scaffold-eth";
 
 const Home: NextPage = () => {
   const [activeItem, setActiveItem] = useState("split-eth");
@@ -55,7 +56,7 @@ const Home: NextPage = () => {
           />
         
         <div className="mx-auto mt-14">
-        <form className="md:w-[500px] w-[300px] lg:w-[800px] bg-base-100 rounded-3xl shadow-xl border-primary border-2 p-2">
+        <form className="md:w-[220px] w-[220px] lg:w-[220px] bg-base-100 rounded-3xl shadow-xl border-primary border-2 p-2">
         <div className="flex-column">
           <span className="p-2 text-lg font-bold"> Sum + Fee: </span>
           <span className="text-lg text-right min-w-[2rem]"> {totalAmount.toLocaleString() || "0"} </span>
@@ -68,8 +69,7 @@ const Home: NextPage = () => {
 
           <div className="p-2 py-1"> </div>
           <span className="p-2 text-lg font-bold"> Contract Address:</span>
-          <span className="text-right min-w-[2rem]"> {splitterXContract || "Not Deployed"} </span>
-          
+          <Address address={splitterXContract} />          
 
         </div>
         </form>
