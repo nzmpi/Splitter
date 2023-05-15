@@ -104,9 +104,9 @@ export const GetToken = ({
           <p className="font-semibold mx-[15px] my-0 break-words ">Your Balance: {tokenBalance} </p>
           <p className="font-semibold mx-[15px] my-0 break-words ">Splitter's Allowance: {tokenAllowance} </p>
           <div
-            className={`flex items-center justify-between border-base-300  rounded-full text-accent w-full`}
+            className={"flex flex-row mt-2"}
           >
-          <span className="w-3/5">
+          <span className="w-3/5 my-[5px]">
             <Input
               name = {tokenSymbol}
               placeholder="Amount"
@@ -125,7 +125,7 @@ export const GetToken = ({
               type="button"
               disabled={tokenContract == "" || tokenName == "" || approveAmountString == ""}
               style={{ marginLeft: "auto" }}
-              className={`mx-[60px] btn btn-primary btn-circle w-1/5 font-black`}
+              className={"ml-3 lg:mx-[100px] md:mx-[40px] btn btn-primary"}
               onClick={async () => {
                 await approve();
                 getTokenData();
