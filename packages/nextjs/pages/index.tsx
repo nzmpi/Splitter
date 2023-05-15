@@ -54,7 +54,8 @@ const Home: NextPage = () => {
           setTotalAmount={setTotalAmount}
           />
         
-        <div className="flex mx-auto mt-14 border-primary border-2 rounded-3xl shadow-lg px-7 py-5 ">
+        <div className="mx-auto mt-14">
+        <form className="md:w-[500px] w-[300px] lg:w-[800px] bg-base-100 rounded-3xl shadow-xl border-primary border-2 p-2">
         <div className="flex-column">
           <span className="p-2 text-lg font-bold"> Sum + Fee: </span>
           <span className="text-lg text-right min-w-[2rem]"> {totalAmount.toLocaleString() || "0"} </span>
@@ -67,9 +68,11 @@ const Home: NextPage = () => {
 
           <div className="p-2 py-1"> </div>
           <span className="p-2 text-lg font-bold"> Contract Address:</span>
-          <span className="text-lg text-right min-w-[2rem]"> {splitterXContract || "Not Deployed"} </span>
+          <span className="text-right min-w-[2rem]"> {splitterXContract || "Not Deployed"} </span>
+          
 
         </div>
+        </form>
         </div>
         </div>
     </>
