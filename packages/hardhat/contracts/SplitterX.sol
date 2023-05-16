@@ -15,7 +15,7 @@ contract SplitterX is ReentrancyGuard {
   // 100% == 1000
   uint16 public fee;
 
-  constructor () {
+  constructor () payable {
     owner = msg.sender;
   }
 
